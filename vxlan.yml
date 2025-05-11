@@ -15,7 +15,7 @@
       with_items: "{{ groups['all'] }}"
       when: item != inventory_hostname 
     - name: create vxlan interface
-      shell: "echo 'ip addr add {{ hostvars[item].vxlan_ip}}{{vxlan_subnet}} dev {{vxlan_interface}}' >> /vxlan_config"
+      shell: "echo 'ip addr add {{ hostvars[item].vxlan_ip}}/{{vxlan_mask_bits}} dev {{vxlan_interface}}' >> /vxlan_config"
       when: inventory_hostname == item
       with_items: "{{ groups['all'] }}"
     - name: create vxlan interface

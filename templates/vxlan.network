@@ -5,7 +5,7 @@ Name={{vxlan_interface}}
 MTUBytes=1370
 
 [Network]
-Address={{hostvars[inventory_hostname].vxlan_ip}}{{vxlan_subnet}}
+Address={{hostvars[inventory_hostname].vxlan_ip}}/{{vxlan_mask_bits}}
 
 
 {% for peer in groups['all'] %}

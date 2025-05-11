@@ -27,9 +27,10 @@ all:
   vars:
     ufw_enabled: false
     ansible_become_method: su 
+    wireguard_interface: wg0
     wireguard_mask_bits: 24
     wireguard_port: 51872
     ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
-    vxlan_subnet: "/24"
+    vxlan_mask_bits: 24
     vxlan_interface: vx0
 

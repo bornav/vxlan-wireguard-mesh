@@ -97,20 +97,20 @@
       with_items: "{{ wireguard_preshared_key.results }}"
       become: yes
 
-    - name: Setup wg0 device
+    - name: Setup wireguard device
       template:
-        src: ./templates/systemd.netdev
-        dest: /etc/systemd/network/99-wg0.netdev
+        src: ./templates/wireguard.netdev
+        dest: /etc/systemd/network/99-{{wireguard_interface}}.netdev
         owner: root
         group: systemd-network
         mode: 0640
       become: yes
       notify: systemd network restart
 
-    - name: Setup wg0 network
+    - name: Setup wireguard network
       template:
-        src: ./templates/systemd.network
-        dest: /etc/systemd/network/99-wg0.network
+        src: ./templates/wireguard.network
+        dest: /etc/systemd/network/99-{{wireguard_interface}}.network
         owner: root
         group: systemd-network
         mode: 0640

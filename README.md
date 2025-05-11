@@ -1,153 +1,28 @@
+# Wireguard VXLAN mesh ansible
+### This ansible script extends https://github.com/jawher/automation-wireguard wireguard by:
+- making in nix "compatile"
+- adding vxlan mesh compatibility
+- adding vxlan test
 
+## To Run it 
 
-- 91.99.66.138
-- 157.90.237.40
-- 195.201.19.114
-- 10.129.16.1
-- 10.129.16.2
-- 10.129.16.3
-- 10.129.16.4
+The make file will reference inventory/<filename>.yml file, make sure to set the inventory name in the makefile
 
-#Host1
-ip link add provider0 type vxlan id 16 local 91.99.66.138 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 157.90.237.40 dev provider0
-bridge fdb append to 00:00:00:00:00:00 dst 195.201.19.114 dev provider0
-ip addr add 10.129.16.1/23 dev provider0
-ip link set up dev provider0
+### Wireguard
+To run wireguard mesh run:  
+`make apply-wireguard`
 
-#Host2
-ip link add provider0 type vxlan id 16 local 157.90.237.40 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 91.99.66.138 dev provider0
-bridge fdb append to 00:00:00:00:00:00 dst 195.201.19.114 dev provider0
-ip addr add 10.129.16.2/23 dev provider0
-ip link set up dev provider0
+Then to test if all nodes can communicate run:  
+`make test-wireguard`
 
-#Host3
-ip link add provider0 type vxlan id 16 local 195.201.19.114 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 91.99.66.138 dev provider0
-bridge fdb append to 00:00:00:00:00:00 dst 157.90.237.40 dev provider0
-ip addr add 10.129.16.3/23 dev provider0
-ip link set up dev provider0
+### 
+To run a vxlan mesh that does not persist across reboots run:  
+`make apply-vxlan-non-static`  
+This will create a `/vxlan_config` in the root of all of your hosts, next you just need to pipe the lines from that file to the terminal as priviledged user
 
+To run a persistant configuration run:  
+`make apply-vxlan`  
+This will add vxlan interface and create bridges that will forward all traffic across all hosts
 
-lighthou  10.99.10.254
-oracleBV  10.99.10.12
-oracleKM  10.99.10.11
-contabo   10.99.10.13
-
-ip addr add 10.129.16.1/24 dev vx0
-
-
-
-#Host1 oracle bv
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.12 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.254 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.11 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.13 dev vx0
-ip addr add 10.129.16.1/24 dev vx0
-ip link set up dev vx0
-
-#Host2 oracle km
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.11 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.254 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.12 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.13 dev vx0
-ip addr add 10.129.16.2/24 dev vx0
-ip link set up dev vx0
-
-#Host3 contabo
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.13 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.254 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.12 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.11 dev vx0
-ip addr add 10.129.16.3/24 dev vx0
-ip link set up dev vx0
-
-#Host4 light
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.254 dstport 0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.13 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.12 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.11 dev vx0
-ip addr add 10.129.16.4/24 dev vx0
-ip link set up dev vx0
-
-
-
-#################################################
-
-#Host5 test-rke
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.14 dstport 0   
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.254 dev vx0
-bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.12 dev vx0
-ip addr add 10.129.16.3/24 dev vx0
-ip link set up dev vx0
-
-#Host4 light
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.254 dstport 0
-./bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.14 dev vx0
-./bridge fdb append to 00:00:00:00:00:00 dst 10.99.10.12 dev vx0
-ip addr add 10.129.16.4/24 dev vx0
-ip link set up dev vx0
-
-
-##id 5  # confirmed working with cilium and metallb
-#Host5 test-rke
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.14 remote 10.99.10.254 dev wg0 dstport 4789
-ip addr add 10.129.16.3/24 dev vx0
-ip link set up dev vx0
-
-#Host4 light
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.254 remote 10.99.10.14 dev wg0 dstport 4789
-ip addr add 10.129.16.4/24 dev vx0
-ip link set up dev vx0
-##id 5############################################
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- 
-# Host5 (10.99.10.14) Configuration
-ip link add vx0 type vxlan id 16 local 10.99.10.14 dev wg0 dstport 4789
-ip addr add 10.129.16.5/24 dev vx0
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.10
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.11
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.12
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.13 -->
-
-
-
-## seems to also work
-#Host5 test-rke
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.14 dev wg0 dstport 4789
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.254
-bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.12
-ip addr add 10.129.16.3/24 dev vx0
-ip link set up dev vx0
-
-#Host4 light
-ip link delete vx0
-ip link add vx0 type vxlan id 16 local 10.99.10.254 dev wg0 dstport 4789
-./bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.14
-./bridge fdb append 00:00:00:00:00:00 dev vx0 dst 10.99.10.12
-ip addr add 10.129.16.4/24 dev vx0
-ip link set up dev vx0
-## given ./bridge is path to nixstore iproute2
-## seems to also work
-
+To test the vxlan you can run this command  
+`make test-vxlan`

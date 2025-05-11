@@ -1,11 +1,16 @@
-INVENTORY = inventory
+INVENTORY = inventory.yml
 
-apply-wg:
-	ansible-playbook -i "inventories/${INVENTORY}.yml" "wireguard.yml"
-apply-vxlan_systemd:
-	ansible-playbook -i "inventories/${INVENTORY}.yml" "wireguard.yml"
+apply-wireguard:
+	ansible-playbook -i "inventories/${INVENTORY}" "wireguard.yml"
 
-test:
-	ansible-playbook -i "inventories/${INVENTORY}.yml" "ping.yml"
+apply-vxlan:
+	ansible-playbook -i "inventories/${INVENTORY}" "vxlan_systemd.yml"
+
+apply-vxlan-non-static:
+	ansible-playbook -i "inventories/${INVENTORY}" "vxlan.yml"
+
+test-wireguard:
+	ansible-playbook -i "inventories/${INVENTORY}" "ping.yml"
+
 test-vxlan:
-	ansible-playbook -i "inventories/${INVENTORY}.yml" "ping_vxlan.yml"
+	ansible-playbook -i "inventories/${INVENTORY}" "ping_vxlan.yml"

@@ -4,7 +4,7 @@
   tasks:
     - name: Setup vxlan interface
       template:
-        src: ./templates/systemd_vxlan_interface.network
+        src: ./templates/vxlan.network
         dest: /etc/systemd/network/100-vx0.network
         owner: root
         group: systemd-network
@@ -13,7 +13,7 @@
       notify: systemd network restart
     - name: Setup vxlan nedev
       template:
-        src: ./templates/systemd_vxlan_interface.netdev
+        src: ./templates/vxlan.netdev
         dest: /etc/systemd/network/100-vx0.netdev
         owner: root
         group: systemd-network

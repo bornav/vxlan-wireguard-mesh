@@ -1,7 +1,7 @@
 [NetDev]
-Name=wg0
+Name={{wireguard_interface}}
 Kind=wireguard
-Description=WireGuard tunnel wg0
+Description=WireGuard tunnel {{wireguard_interface}}
 
 [WireGuard]
 ListenPort={{ wireguard_port }}
