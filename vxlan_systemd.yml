@@ -1,0 +1,29 @@
+---
+- hosts: all
+  gather_facts: yes
+  tasks:
+    - name: Setup vxlan interface
+      template:
+        src: ./templates/systemd_vxlan_interface.network
+        dest: /etc/systemd/network/100-vx0.network
+        owner: root
+        group: systemd-network
+        mode: 0640
+      become: yes
+      notify: systemd network restart
+    - name: Setup vxlan nedev
+      template:
+        src: ./templates/systemd_vxlan_interface.netdev
+        dest: /etc/systemd/network/100-vx0.netdev
+        owner: root
+        group: systemd-network
+        mode: 0640
+      become: yes
+      notify: systemd network restart
+  handlers:
+    - name: systemd network restart
+      service:
+        name: systemd-networkd
+        state: restarted
+        enabled: yes
+      become: yes

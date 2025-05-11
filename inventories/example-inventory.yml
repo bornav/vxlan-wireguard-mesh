@@ -1,0 +1,35 @@
+all:
+  hosts:
+    host1:
+      pipelining: true
+      ansible_ssh_user: root
+      ansible_host: "host1-ip"
+      ansible_ssh_port: 22
+      ansible_ssh_private_key_file: ~/.ssh/id_local
+      wireguard_ip: 10.200.10.1
+      vxlan_ip: 10.200.11.1
+    host2:
+      pipelining: true
+      ansible_ssh_user: root
+      ansible_host: "host1-ip"
+      ansible_ssh_port: 22
+      ansible_ssh_private_key_file: ~/.ssh/id_local
+      wireguard_ip: 10.200.10.2
+      vxlan_ip: 10.200.11.2
+    host3:
+      pipelining: true
+      ansible_ssh_user: root
+      ansible_host: "host1-ip"
+      ansible_ssh_port: 22
+      ansible_ssh_private_key_file: ~/.ssh/id_local
+      wireguard_ip: 10.200.10.3
+      vxlan_ip: 10.200.11.3
+  vars:
+    ufw_enabled: false
+    ansible_become_method: su 
+    wireguard_mask_bits: 24
+    wireguard_port: 51872
+    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    vxlan_subnet: "/24"
+    vxlan_interface: vx0
+
