@@ -11,6 +11,7 @@
         mode: 0640
       become: yes
       notify: systemd network restart
+      when: vxlan_ip is defined and vxlan_ip
     - name: Setup vxlan nedev
       template:
         src: ./templates/vxlan.netdev
@@ -20,6 +21,7 @@
         mode: 0640
       become: yes
       notify: systemd network restart
+      when: vxlan_ip is defined and vxlan_ip
   handlers:
     - name: systemd network restart
       service:

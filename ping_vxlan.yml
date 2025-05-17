@@ -5,4 +5,6 @@
     - name: ping
       command: "ping -c3 {{ hostvars[item].vxlan_ip }}"
       with_items: "{{ groups['all'] }}"
-      when: item != inventory_hostname 
+      when:
+        - hostvars[item].vxlan_ip is defined
+        - item != inventory_hostname
