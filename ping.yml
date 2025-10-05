@@ -5,4 +5,4 @@
     - name: ping
       command: "ping -c3 {{ hostvars[item].wireguard_ip }}"
       with_items: "{{ groups['all'] }}"
-      when: item != inventory_hostname 
+      when: item != inventory_hostname

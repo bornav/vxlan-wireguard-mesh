@@ -13,7 +13,7 @@
     - name: generate Preshared keyskeypair
       shell: "echo 'bridge fdb append 00:00:00:00:00:00 dev {{vxlan_interface}} dst {{ hostvars[item].wireguard_ip}}' >> /vxlan_config"
       with_items: "{{ groups['all'] }}"
-      when: item != inventory_hostname 
+      when: item != inventory_hostname
     - name: create vxlan interface
       shell: "echo 'ip addr add {{ hostvars[item].vxlan_ip}}/{{vxlan_mask_bits}} dev {{vxlan_interface}}' >> /vxlan_config"
       when: inventory_hostname == item
@@ -22,8 +22,6 @@
       shell: "echo 'ip link set up dev {{vxlan_interface}}' >> /vxlan_config"
       when: inventory_hostname == item
       with_items: "{{ groups['all'] }}"
-
-
 ### example of a file it will create
 # ip link delete vx0
 # ip link add vx0 type vxlan id 16 local 10.99.10.254 dev wg0 dstport 4789
