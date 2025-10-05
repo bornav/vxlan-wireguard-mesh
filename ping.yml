@@ -3,6 +3,9 @@
   gather_facts: yes
   tasks:
     - name: ping
-      command: "ping -c3 {{ hostvars[item].wireguard_ip }}"
+      command: "ping -c 1 {{ hostvars[item].wireguard_ip }} -w 1"
       with_items: "{{ groups['all'] }}"
-      when: item != inventory_hostname
+      when:
+        - hostvars[item].wireguard_ip is defined
+        - item != inventory_hostname
+      changed_when: false
