@@ -6,6 +6,7 @@ all:
       ansible_host: "host1-ip"
       ansible_ssh_port: 22
       ansible_ssh_private_key_file: ~/.ssh/id_local
+      # wireguard_port: 51872
       wireguard_ip: 10.200.10.1
       vxlan_ip: 10.200.11.1
     host2:
@@ -26,11 +27,10 @@ all:
       vxlan_ip: 10.200.11.3
   vars:
     ufw_enabled: false
-    ansible_become_method: su 
+    ansible_become_method: su
     wireguard_interface: wg0
     wireguard_mask_bits: 24
-    wireguard_port: 51872
-    ansible_ssh_common_args: '-o StrictHostKeyChecking=no'
+    wireguard_port: 51872 # default port if unspecified in the host
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
     vxlan_mask_bits: 24
     vxlan_interface: vx0
-
