@@ -97,6 +97,20 @@
       with_items: "{{ wireguard_preshared_key.results }}"
       become: yes
 
+    - name: Check if network interface exists and delete if present
+      block:
+        - name: Check if interface {{ wireguard_interface }} exists
+          ansible.builtin.stat:
+            path: "/sys/class/net/{{ wireguard_interface }}"
+          register: interface_check
+
+        - name: Delete network interface {{ wireguard_interface }}
+          ansible.builtin.command:
+            cmd: "ip link delete {{ wireguard_interface }}"
+          when: interface_check.stat.exists
+          become: true
+          notify: systemd network restart
+
     - name: Setup wireguard device
       template:
         src: ./templates/wireguard.netdev
